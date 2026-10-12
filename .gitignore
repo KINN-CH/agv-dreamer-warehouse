@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+# 큰 파일은 Releases로 (가중치·발표 자료·원본 데이터)
+*.pt
+*.npz
+*.pptx
+models/*.pt
+data/

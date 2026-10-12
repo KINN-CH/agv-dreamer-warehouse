@@ -1,0 +1,284 @@
+<title>AGV Dreamer 수식 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F6F9; --surface:#FFFFFF; --ink:#1B2130; --muted:#586274; --line:#DFE4EB; --soft:#EEF3FF;
+  --accent:#0054FF; --obs:#0E9F4E; --floor:#2747F0; --warn:#C2410C; --code:#F1F3F7;
+  --display:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F131A; --surface:#161C25; --ink:#E5E9F0; --muted:#9AA4B3; --line:#2A3240; --soft:#1A2540;
+    --accent:#6B95FF; --obs:#3CCB7F; --floor:#8197FF; --warn:#FB923C; --code:#1C2330; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F131A; --surface:#161C25; --ink:#E5E9F0; --muted:#9AA4B3; --line:#2A3240; --soft:#1A2540;
+  --accent:#6B95FF; --obs:#3CCB7F; --floor:#8197FF; --warn:#FB923C; --code:#1C2330; color-scheme:dark;
+}
+body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16.5px; line-height:1.75;}
+.wrap{max-width:780px; margin:0 auto; padding-inline:20px; padding-block:40px 80px;}
+h1,h2,h3{font-family:var(--display); text-wrap:balance; line-height:1.3;}
+h1{font-size:2.1rem; margin:0 0 .4rem; letter-spacing:-.01em;}
+.lede{color:var(--muted); margin:0 0 1.6rem;}
+h2{font-size:1.45rem; margin:3.2rem 0 .9rem; padding-top:1.2rem; border-top:1px solid var(--line); display:flex; gap:.6rem; align-items:baseline;}
+h2 .n{font-family:var(--mono); color:var(--accent); font-size:1.05rem; font-weight:600;}
+h3{font-size:1.08rem; margin:1.8rem 0 .5rem;}
+p{margin:.6rem 0;}
+code,.mono{font-family:var(--mono); font-size:.92em; background:var(--code); padding:.05em .35em; border-radius:4px;}
+.flow{display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; margin:1.2rem 0 2rem; font-size:.92rem;}
+.flow a{color:var(--ink); text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:.3rem .7rem; border-radius:999px;}
+.flow a:hover,.flow a:focus-visible{border-color:var(--accent); color:var(--accent); outline:none;}
+.flow span{color:var(--muted);}
+.eq{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:.6rem 1rem; margin:.9rem 0; overflow-x:auto;}
+.plain{background:var(--soft); border-radius:10px; padding:.75rem 1rem; margin:.9rem 0;}
+.plain b.k{display:inline-block; font-family:var(--display); font-size:.78rem; letter-spacing:.06em; color:var(--accent); margin-right:.5rem;}
+.ex{border-left:3px solid var(--accent); padding:.2rem 0 .2rem 1rem; margin:.9rem 0; color:var(--ink);}
+.ex .mono{background:none; padding:0;}
+.note{color:var(--warn); font-weight:500;}
+.tbl{overflow-x:auto; margin:1rem 0;}
+table{border-collapse:collapse; width:100%; font-size:.93rem; font-variant-numeric:tabular-nums;}
+th,td{border-bottom:1px solid var(--line); padding:.45rem .6rem; text-align:left; vertical-align:top;}
+th{font-family:var(--display); font-weight:600; color:var(--muted); font-size:.85rem; letter-spacing:.03em;}
+.g{color:var(--obs); font-weight:700;} .b{color:var(--floor); font-weight:700;}
+figure{margin:1.2rem 0; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:1rem; overflow-x:auto;}
+figcaption{color:var(--muted); font-size:.88rem; margin-top:.5rem;}
+svg text{font-family:var(--body);}
+.answer{background:var(--surface); border:2px solid var(--accent); border-radius:12px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.answer h3{margin-top:0; color:var(--accent);}
+ul{padding-left:1.2rem;} li{margin:.25rem 0;}
+mjx-container[display="true"]{margin:.4em 0 !important;}
+@media (max-width:520px){ body{font-size:15.5px;} h1{font-size:1.7rem;} }
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+
+<div class="wrap">
+<h1>AGV Dreamer 수식 노트</h1>
+<p class="lede">깊이 카메라 값이 2D 지도가 되고, Dreamer가 그것으로 2초 뒤를 상상해 속도를 고르기까지 — 우리 시스템에 쓰인 식을 모두 적고, 식마다 쉬운 말과 실제 숫자를 붙였습니다. 숫자는 최종 모델(v5c)과 실제 코드 기준입니다.</p>
+
+<nav class="flow" aria-label="흐름">
+  <a href="#s1">깊이 값</a><span>→</span><a href="#s2">3D 점</a><span>→</span><a href="#s3">점 고르기</a><span>→</span><a href="#s4">64×64 칸</a><span>→</span><a href="#s5">행동</a><span>→</span><a href="#s6">Dreamer</a><span>→</span><a href="#s7">학습</a><span>→</span><a href="#s8">상상·속도</a>
+  <span>·</span><a href="#s9">규칙</a><a href="#s10">길찾기</a><a href="#s11">평가</a><a href="#s12">한계</a>
+</nav>
+
+<h3>기호 정리</h3>
+<div class="tbl"><table>
+<tr><th>기호</th><th>뜻</th><th>우리 값</th></tr>
+<tr><td>\(t\)</td><td>시간 칸. 0.2초가 한 칸</td><td>5칸 = 1초</td></tr>
+<tr><td>\((u,v),\ Z\)</td><td>깊이 화면의 픽셀 위치(가로, 세로)와 그 픽셀의 거리(m)</td><td>160×120 픽셀</td></tr>
+<tr><td>\(x_f,\ x_l,\ x_h\)</td><td>AGV 기준 앞(m) · 왼쪽(m) · 바닥에서 높이(m)</td><td>오른쪽은 \(x_l\lt 0\)</td></tr>
+<tr><td>\(r,\ q\)</td><td>2D 지도의 칸 번호(행 = 위에서 몇 번째, 열 = 왼쪽에서 몇 번째)</td><td>0~63</td></tr>
+<tr><td>\(a_t=(v,\omega)\)</td><td>행동: 전진 속도(m/s), 회전 속도(rad/s, + = 왼쪽)</td><td>\(v\) −0.3~1.0 (후진은 0.6%)</td></tr>
+<tr><td>\(h_t,\ z_t\)</td><td>Dreamer의 기억(숫자 512개), 요약 상태(32문항 × 32지선다)</td><td></td></tr>
+<tr><td>\(p_k\)</td><td>상상한 \(k\)번째 칸(0.2k초 뒤)에서 부딪힐 확률</td><td>\(k=1..10\)</td></tr>
+</table></div>
+
+<!-- 1 -->
+<h2 id="s1"><span class="n">1</span>깊이 카메라가 주는 값</h2>
+<p>깊이 카메라는 픽셀마다 <b>거리 숫자</b> 하나를 줍니다. 화면의 빨강~파랑은 사람이 보라고 칠한 것이고, 계산에는 숫자만 씁니다.</p>
+<div class="eq">\[ Z = D(u, v)\quad [\mathrm{m}],\qquad u = 0..159,\ \ v = 0..119 \]</div>
+<p>픽셀 하나가 어느 방향을 보는지는 카메라의 <b>초점 거리(픽셀 단위)</b>로 정해집니다.</p>
+<div class="eq">\[ f_x = f_y = \frac{f}{A}\,W = \frac{6.0}{20.955}\times 160 \approx 45.8\ \text{px},\qquad c_x = 80,\ \ c_y = 60 \]
+\[ \text{FOV}_{\text{horizontal}} = 2\arctan\frac{W/2}{f_x} = 2\arctan\frac{80}{45.8} \approx 120^\circ,\qquad \text{FOV}_{\text{vertical}} \approx 105^\circ \]</div>
+<div class="plain"><b class="k">쉬운 말</b>\(f\)는 렌즈 초점 거리, \(A\)는 센서 가로 폭(Isaac Sim 기본 20.955), \(W\)는 가로 픽셀 수입니다. \(f_x\)가 작을수록 넓게 봅니다. \((c_x, c_y)\)는 화면 한가운데입니다.</div>
+<p>실제 RealSense는 픽셀마다 정수(1mm 단위)를 줍니다. <code>1520</code> → 1.52m. 형식은 같고, 실제 카메라는 잡음과 빈 값(0)이 있습니다(→ <a href="#s12">한계</a>).</p>
+
+<!-- 2 -->
+<h2 id="s2"><span class="n">2</span>픽셀 하나를 3D 점으로 (핀홀 카메라 식)</h2>
+<div class="eq">\[ X = \frac{(u - c_x)\,Z}{f_x},\qquad Y = \frac{(v - c_y)\,Z}{f_y} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>"화면 가운데에서 몇 픽셀 떨어졌나" × 거리 ÷ 초점 = 실제로 옆(아래)으로 몇 m 떨어졌나. 닮은 삼각형 비율입니다. \(X\)는 카메라 기준 오른쪽, \(Y\)는 아래쪽입니다.</div>
+<p>이것을 AGV 기준(앞·왼쪽·높이)으로 옮깁니다. 감지 카메라는 차체 기준점보다 0.36m 앞, 바닥에서 \(h_c\) 높이에 있고 정면을 봅니다.</p>
+<div class="eq">\[ x_f = 0.36 + Z,\qquad x_l = -X,\qquad x_h = h_c - Y,\qquad h_c \approx 0.33\ \text{m} \]</div>
+<div class="ex">예시 (7장 그림과 같은 순간): 사람 몸의 한 픽셀 <span class="mono">(u, v) = (88.5, 52.5)</span>, <span class="mono">Z = 1.71m</span><br>
+→ <span class="mono">X = 0.32, Y = −0.28</span> → <b>앞 2.07m · 왼쪽 −0.32m(오른쪽 0.32m) · 높이 0.61m</b></div>
+<p>옆·뒤 카메라 3대(차체 옆면 ±90°, 뒷면 180°)도 같은 식을 쓰고, 카메라 방향만큼 돌려서 같은 AGV 기준으로 모읍니다. 실제 코드에서는 Isaac Sim이 점을 창고(월드) 좌표로 주므로, AGV 위치 \((x, y)\)와 방향 \(\psi\)로 다시 AGV 기준으로 돌립니다.</p>
+<div class="eq">\[ x_f = \cos\psi\,(X_w - x) + \sin\psi\,(Y_w - y),\qquad x_l = -\sin\psi\,(X_w - x) + \cos\psi\,(Y_w - y) \]</div>
+<div class="plain"><b class="k">쉬운 말</b>창고 지도 위의 점을 "AGV가 바라보는 방향이 위"가 되게 돌려 놓는 식입니다. 결과는 위 식과 같습니다.</div>
+
+<!-- 3 -->
+<h2 id="s3"><span class="n">3</span>점 고르기 — 높이와 거리</h2>
+<div class="eq">\[ d = \sqrt{x_f^2 + x_l^2} \]
+\[ \text{obstacle: } 0.1 \lt x_h \lt 1.0\ \text{ and } d \lt 5,\qquad \text{floor: } x_h \lt 0.05\ \text{ and } d \lt 5,\qquad \text{else: drop} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>
+<span class="g">장애물</span> = 바닥에서 10cm~1m 높이에 있는 점(AGV가 부딪힐 수 있는 높이). <span class="b">바닥</span> = 높이 5cm 아래 점(“여기는 비어 있다”는 증거). 1m보다 높은 점(천장·랙 윗단), 5m 밖의 점, 5~10cm 사이의 애매한 점은 버립니다. 차체 자신에 찍힌 점(차체 둘레 0.1m 안)도 뺍니다. 바닥 점은 계산을 줄이려고 2개 중 1개만 씁니다.</div>
+<div class="ex">예시 (같은 순간, 앞 카메라 1.9만 점): <span class="g">장애물 219개</span> · <span class="b">바닥 8,876개</span> · 버림 10,105개<br>
+천장 쪽 픽셀 <span class="mono">(30.5, 20.5)</span>, <span class="mono">Z = 11.2m</span> → 높이 10.0m, 거리 16.8m → <b>버림</b></div>
+
+<!-- 4 -->
+<h2 id="s4"><span class="n">4</span>64×64 지도로 — 칸 번호 계산과 칠하는 규칙</h2>
+<p>지도는 AGV를 기준으로 한 64×64 칸, 한 칸 0.15m입니다(9.6m × 9.6m). AGV 기준점은 위에서 44번째 줄, 가로 한가운데(32번 열 경계)에 있어서 <b>앞 6.6m · 뒤 3.0m · 좌우 4.8m</b>를 봅니다. 앞이 위쪽입니다.</p>
+<div class="eq">\[ r = \left\lfloor\, 44 - \frac{x_f}{0.15} \,\right\rfloor,\qquad q = \left\lfloor\, 32 - \frac{x_l}{0.15} \,\right\rfloor,\qquad 0 \le r,\, q \le 63 \ \text{만 씀} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>앞으로 0.15m 갈 때마다 한 줄 위, 왼쪽으로 0.15m 갈 때마다 한 칸 왼쪽입니다. \(\lfloor\ \rfloor\)는 소수점 아래 버림입니다. 범위 밖(예: 7m 앞)이면 지도에 안 들어갑니다.</div>
+<div class="ex">예시: 2장의 사람 점 (앞 2.07, 왼쪽 −0.32)<br>
+<span class="mono">r = ⌊44 − 2.07/0.15⌋ = ⌊44 − 13.8⌋ = 30</span>, <span class="mono">q = ⌊32 − (−0.32)/0.15⌋ = ⌊32 + 2.13⌋ = 34</span> → 30번 줄 34번 칸이 <span class="g">초록</span><br>
+바닥 점 (앞 0.66, 왼쪽 0) → <span class="mono">r = 39, q = 32</span> → <span class="b">파랑</span></div>
+
+<div class="answer">
+<h3>질문: 칸 안에 점이 조금만 있어도 칠하나요, 일정 비율 이상일 때만 칠하나요?</h3>
+<p><b>점이 하나라도 떨어지면 칠합니다. 비율이나 개수 문턱은 없습니다.</b> 칸마다 "있다(255) / 없다(0)" 두 가지뿐이고, 점이 몇 개였는지는 남기지 않습니다.</p>
+<div class="eq" style="margin-bottom:0">\[ G[r,q] = 255\cdot\mathbf{1}\big[\exists\ \text{obstacle point } i:\ (r_i, q_i) = (r, q)\big] \]
+\[ B[r,q] = 255\cdot\mathbf{1}\big[\exists\ \text{floor point } j:\ (r_j, q_j) = (r, q)\big] \]
+<p style="margin:.3rem 0 0;color:var(--muted);font-size:.92rem">\(\mathbf{1}[\cdot]\) = 괄호 안이 참이면 1, 거짓이면 0. \(\exists\) = "하나라도 있다".</p></div>
+</div>
+
+<figure>
+<svg viewBox="0 0 640 170" width="100%" role="img" aria-label="칸 네 개 예시: 장애물 점 하나, 바닥 점 여럿, 둘 다, 아무것도 없음">
+  <g font-size="13">
+    <rect x="20" y="20" width="110" height="110" fill="#00FF00" stroke="#555"/><circle cx="70" cy="60" r="4" fill="#0B3"/><text x="75" y="150" text-anchor="middle" fill="currentColor">장애물 점 1개 → 초록</text>
+    <rect x="175" y="20" width="110" height="110" fill="#0000FF" stroke="#555"/>
+    <g fill="#9DB0FF"><circle cx="195" cy="40" r="3"/><circle cx="215" cy="70" r="3"/><circle cx="240" cy="45" r="3"/><circle cx="260" cy="95" r="3"/><circle cx="205" cy="110" r="3"/><circle cx="250" cy="70" r="3"/><circle cx="230" cy="100" r="3"/></g>
+    <text x="230" y="150" text-anchor="middle" fill="currentColor">바닥 점 여러 개 → 파랑</text>
+    <rect x="330" y="20" width="110" height="110" fill="#00FFFF" stroke="#555"/><circle cx="360" cy="55" r="4" fill="#0B3"/><circle cx="410" cy="95" r="3" fill="#33F"/><circle cx="395" cy="40" r="3" fill="#33F"/>
+    <text x="385" y="150" text-anchor="middle" fill="currentColor">둘 다 → 하늘색(초록+파랑)</text>
+    <rect x="485" y="20" width="110" height="110" fill="#000" stroke="#555"/><text x="540" y="150" text-anchor="middle" fill="currentColor">점 없음 → 검정</text>
+  </g>
+</svg>
+<figcaption>칸 하나의 색은 "그 칸에 어떤 종류의 점이 하나라도 있었나"만 나타냅니다. 위치(몇 번째 칸인가)가 거리 정보이고, 색은 종류 정보입니다.</figcaption>
+</figure>
+
+<ul>
+<li><b>채널 세 장:</b> R = 처음 지도의 랙·벽(모델 입력에서는 끔, 모두 0) · <span class="g">G = 장애물</span> · <span class="b">B = 바닥</span>. 같은 칸에 둘 다 있으면 G와 B가 함께 켜져 하늘색으로 보입니다(예: 사람 다리 사이로 바닥이 보일 때).</li>
+<li><b>카메라 4대:</b> 네 카메라의 점을 모두 합친 뒤 한 번에 칠합니다.</li>
+<li><b>검정:</b> 점이 하나도 없는 칸. "안 보이는 곳"이거나 5m 밖입니다.</li>
+<li><b>Dreamer에 넣을 때:</b> 값을 255로 나눠 0 또는 1로 넣습니다. 지도는 0.2초마다 새로 만들고, 이전 지도를 이어 붙이지 않습니다(이어 기억하는 일은 Dreamer의 기억 \(h\)가 합니다).</li>
+</ul>
+<div class="plain"><b class="k">왜 문턱이 없나</b>시뮬레이터 깊이에는 잡음이 없어서 잘못 찍힌 점이 없습니다. 또 가까운 칸에는 점이 수십 개 떨어지지만 먼 칸에는 한두 개뿐이라, "몇 개 이상"으로 자르면 먼 장애물이 사라집니다. 실제 카메라로 가면 잡음 점이 생기므로 "2개 이상"이나 "몇 장 연속" 같은 걸러내기를 넣어야 합니다.</div>
+<p><b>헷갈리기 쉬운 것:</b> 길찾기(A*)용 지도는 다른 지도이고, 거기에는 문턱이 있습니다. 같은 0.1m 칸에서 장애물을 <b>10번 연속(1초)</b> 봐야 "확정 장애물"로 지도에 넣습니다(<a href="#s10">10장</a>). Dreamer 입력 지도는 매 순간 본 그대로이고, 길찾기 지도는 확실한 것만 쌓아 둔 지도입니다.</p>
+
+<!-- 5 -->
+<h2 id="s5"><span class="n">5</span>행동 입력 — 전진 속도와 회전 속도</h2>
+<div class="eq">\[ a_t = (\bar v_t,\ \bar\omega_t) = \frac{1}{n}\sum_{\text{0.2 s}} (v, \omega),\qquad \tilde a_t = \left(\frac{\bar v_t}{1.0},\ \frac{\bar\omega_t}{1.2}\right) \]</div>
+<div class="plain"><b class="k">쉬운 말</b>그 0.2초 동안 AGV에 준 명령의 평균입니다. \(v\)는 앞으로 m/s, \(\omega\)는 초당 몇 라디안 도나(+ 왼쪽, − 오른쪽, 1rad ≈ 57°). 두 값의 크기를 비슷하게(대략 −1~1) 맞추려고 회전만 1.2로 나눠 넣습니다. 각도가 아니라 <b>도는 빠르기</b>입니다.</div>
+<p>좌우 바퀴 속도는 이 두 값에서 바로 나옵니다(바퀴 사이 \(L = 0.579\)m, 바퀴 반지름 0.081m).</p>
+<div class="eq">\[ v_L = v - \frac{\omega L}{2},\qquad v_R = v + \frac{\omega L}{2},\qquad \text{wheel speed} = \frac{v_{L,R}}{0.081}\ \text{rad/s} \]</div>
+<div class="tbl"><table>
+<tr><th>실제 기록</th><th>\((v, \omega)\)</th><th>모델 입력</th><th>뜻</th></tr>
+<tr><td>빠른 직진</td><td class="mono">(0.92, 0.00)</td><td class="mono">(0.92, 0.00)</td><td>0.92m/s로 곧게</td></tr>
+<tr><td>돌며 전진</td><td class="mono">(0.50, 0.25)</td><td class="mono">(0.50, 0.21)</td><td>초당 14° 왼쪽. 왼바퀴 0.43, 오른바퀴 0.57m/s</td></tr>
+<tr><td>제자리 회전</td><td class="mono">(0.00, 0.72)</td><td class="mono">(0.00, 0.60)</td><td>서서 초당 41° 왼쪽</td></tr>
+<tr><td>정지</td><td class="mono">(0.00, 0.00)</td><td class="mono">(0.00, 0.00)</td><td></td></tr>
+</table></div>
+<p>예: "1m/s로 가며 초당 30° 오른쪽" = \((1.0,\ -0.52)\) → 모델 입력 \((1.0,\ -0.44)\).</p>
+
+<!-- 6 -->
+<h2 id="s6"><span class="n">6</span>Dreamer 구조 (RSSM)</h2>
+<p>DreamerV3의 월드모델 구조를 그대로 쓰고, 우리 데이터로 처음부터 학습했습니다. 전체 1,450만 개 숫자(14,504,324개 · 58MB).</p>
+<div class="eq">
+\[ e_t = \mathrm{enc}(x_t) \qquad\qquad \text{(encoder: 64×64 map} \to \text{numbers)} \]
+\[ h_t = \mathrm{GRU}\big(h_{t-1},\ z_{t-1},\ \tilde a_{t-1}\big) \qquad \text{(memory, 512)} \]
+\[ z_t \sim q(z_t \mid h_t, e_t) \qquad\qquad \text{(posterior: after seeing)} \]
+\[ \hat z_t \sim p(\hat z_t \mid h_t) \qquad\qquad\ \ \text{(prior: before seeing = imagination)} \]
+\[ \hat x_t = \mathrm{dec}(h_t, z_t),\qquad c_t = \sigma\big(\mathrm{head}(h_t, z_t)\big),\qquad p_t = 1 - c_t \]
+</div>
+<div class="tbl"><table>
+<tr><th>부품</th><th>쉬운 말</th></tr>
+<tr><td>인코더 \(\mathrm{enc}\)</td><td>지도 한 장을 작은 숫자 묶음으로 줄이는 합성곱 신경망</td></tr>
+<tr><td>기억 \(h_t\)</td><td>지난 상태와 행동을 계속 쌓는 순환 신경망(GRU). 지도 한 장에는 없는 <b>움직임</b>(사람이 다가오는 중인지)을 여기서 압니다</td></tr>
+<tr><td>요약 상태 \(z_t\)</td><td>32개 문항 × 각 32지선다의 객관식 답안. "본 뒤"(\(q\))와 "보기 전 예측"(\(p\)) 두 가지로 만듭니다</td></tr>
+<tr><td>상상 \(p\)</td><td>지도를 <b>안 보고</b> 기억만으로 다음 \(z\)를 고름. 주행 중 미래를 굴려 볼 때 이것만 씁니다</td></tr>
+<tr><td>디코더 \(\mathrm{dec}\)</td><td>\(h, z\)로 지도를 다시 그림. 요약이 지도 내용을 담았는지 학습할 때 확인용</td></tr>
+<tr><td>충돌 머리 \(c_t\)</td><td>원래 "에피소드가 계속되나" 확률. 우리는 충돌하면 끝나게 데이터를 만들어서 \(p_t = 1 - c_t\)가 곧 <b>그 칸에서 부딪힐 확률</b>입니다</td></tr>
+</table></div>
+<div class="eq">\[ q = 0.99\cdot\mathrm{softmax}(\ell) + 0.01\cdot\tfrac{1}{32} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>객관식 답의 확률에 1%는 "아무거나"를 섞어서, 어떤 답도 확률 0이 되지 않게 합니다(학습이 한쪽으로 굳지 않게). 객관식 형태라서 "멈출 수도, 계속 걸을 수도" 같은 여러 미래를 한 번에 담고, 뽑을 때마다 다른 미래가 나옵니다.</div>
+
+<!-- 7 -->
+<h2 id="s7"><span class="n">7</span>학습 — 무엇을 줄이나</h2>
+<div class="eq">\[ \mathcal{L} = \underbrace{\sum_{\text{pixels}} (\hat x_t - x_t)^2}_{\text{(A) map}} \;+\; 2\cdot\underbrace{\mathrm{BCE}(c_t, y_t)}_{\text{(B) collision}} \;+\; 0.5\cdot\underbrace{\max\!\big(1,\ \mathrm{KL}[\,\mathrm{sg}(q)\,\|\,p\,]\big)}_{\text{(C) imagination}} \;+\; 0.1\cdot\underbrace{\max\!\big(1,\ \mathrm{KL}[\,q\,\|\,\mathrm{sg}(p)\,]\big)}_{\text{(D)}} \]
+\[ \mathrm{BCE}(c, y) = -\big[\,y\log c + (1-y)\log(1-c)\,\big],\qquad y_t = \begin{cases} 0 & \text{collision at } t \\ 1 & \text{otherwise} \end{cases} \]
+\[ \mathrm{KL}[\,q\,\|\,p\,] = \sum_{\text{32 slots}}\ \sum_{k=1}^{32} q_k \log\frac{q_k}{p_k} \]</div>
+<div class="tbl"><table>
+<tr><th>항</th><th>쉬운 말</th></tr>
+<tr><td>(A) 지도 복원</td><td>다시 그린 지도와 실제 지도의 칸별 차이의 제곱 합(0~1 값으로). 요약 \(z\)가 지도를 잘 담게 만듭니다</td></tr>
+<tr><td>(B) 충돌 ×2</td><td>부딪힌 칸이면 \(c\)를 0으로, 아니면 1로 맞히게 합니다. 충돌이 드물어서 2배 무게</td></tr>
+<tr><td>(C) 상상 맞추기 ×0.5</td><td>"보기 전 예측" \(p\)를 "본 뒤 상태" \(q\)에 가깝게 당깁니다. <b>이 항 덕분에 안 보고도 다음을 맞히게 됩니다.</b> \(\mathrm{sg}\)(기울기 멈춤)는 이 항이 \(p\)만 움직이게 한다는 뜻</td></tr>
+<tr><td>(D) ×0.1</td><td>반대로 \(q\)가 예측하기 어려운 쪽으로 너무 멀어지지 않게 살짝 잡아 둠</td></tr>
+<tr><td>\(\max(1,\cdot)\)</td><td>차이가 1 이하면 더 줄이려 애쓰지 않음("이미 충분히 비슷하면 그만")</td></tr>
+</table></div>
+<h3>학습 데이터와 설정</h3>
+<ul>
+<li>Isaac Sim 창고 9곳, 2,305번 주행(0.2초 칸 53만 5천 개, 약 30시간, 충돌 752번). 그중 231번은 검증용으로 빼고 2,074번으로 학습. 운전 방식: 규칙대로 피하기 35% · 속도 무작위 50% · 피하지 않기 15%. 길이 없는 장면은 뺐습니다.</li>
+<li>한 번 학습에 <b>16조각 × 24칸(4.8초)</b>. 충돌로 끝난 주행을 뽑으면 30% 확률로 "충돌 순간이 든 마지막 4.8초"를 잘라 씁니다(드문 충돌을 자주 보게).</li>
+<li>Adam, 학습률 \(10^{-4}\), 40,000번 반복, RTX 5090에서 76분. 주행 번호 끝자리 0인 10%는 검증용으로 빼 두고, 검증 AUROC가 가장 좋은 22,000번째(0.948)를 씁니다.</li>
+</ul>
+
+<!-- 8 -->
+<h2 id="s8"><span class="n">8</span>상상 → 위험 → 속도 고르기 (0.2초마다)</h2>
+<p><b>① 보기:</b> 새 지도 \(x_t\)와 방금 행동 \(\tilde a_{t-1}\)로 \(h_t, z_t\)를 갱신합니다(6장의 식). <b>② 상상:</b> 속도 후보 5개마다 앞으로 10칸(2초)의 행동열을 만들고, 지도 없이 \(p\)만으로 굴립니다.</p>
+<div class="eq">\[ v \in \{1.0,\ 0.6,\ 0.3,\ 0,\ -0.3\},\qquad \text{for each } v:\ \ S = 8 \text{ samples},\ \ k = 1..10 \]</div>
+<div class="plain"><b class="k">쉬운 말</b>앞으로 가는 후보는 "지금 경로를 그 속도 이하로 따라가면" 나오는 10칸의 행동(\(v,\omega\))이고, 0과 후진은 곧게입니다. 같은 후보도 미래가 여러 가지일 수 있어서 8번씩 상상합니다.</div>
+<p><b>③ 2초 안에 한 번이라도 부딪힐 확률:</b></p>
+<div class="eq">\[ P^{(s)}(v) = 1 - \prod_{k=1}^{10}\big(1 - p^{(s)}_k\big),\qquad \bar P(v) = \frac{1}{8}\sum_{s=1}^{8} P^{(s)}(v) \]</div>
+<div class="plain"><b class="k">쉬운 말</b>"10칸 내내 안 부딪힐 확률"은 칸마다 안 부딪힐 확률을 모두 곱한 것입니다. 1에서 빼면 "한 번이라도 부딪힐 확률"입니다. 예: 칸마다 2%면 \(1-0.98^{10} \approx 18\%\).</div>
+<p><b>④ 보정(Platt):</b> 학습 때 충돌에 2배 무게를 주고 충돌 조각을 많이 보여 줘서, 모델이 낸 확률은 실제보다 큽니다. 검증 데이터로 맞춘 식으로 실제 비율에 맞춥니다.</p>
+<div class="eq">\[ P_{\text{cal}} = \sigma\big(a\cdot\mathrm{logit}(\bar P) + b\big),\qquad a = 0.515,\ \ b = -1.853,\qquad \mathrm{logit}(p) = \ln\frac{p}{1-p},\ \ \sigma(z) = \frac{1}{1+e^{-z}} \]</div>
+<div class="tbl"><table>
+<tr><th>모델이 낸 \(\bar P\)</th><td class="mono">0.10</td><td class="mono">0.20</td><td class="mono">0.50</td><td class="mono">0.90</td><td class="mono">0.99</td></tr>
+<tr><th>보정 후 \(P_{\text{cal}}\)</th><td class="mono">4.8%</td><td class="mono">7.1%</td><td class="mono">13.6%</td><td class="mono">32.7%</td><td class="mono">62.6%</td></tr>
+</table></div>
+<p><b>⑤ 고르기:</b></p>
+<div class="eq">\[ v^* = \max\,\{\, v \;:\; P_{\text{cal}}(v) \lt 0.05 \,\} \]
+\[ \text{if none:}\quad v^* = \arg\max_v\ \bar t(v),\qquad \bar t = \sum_{k=1}^{10} 0.2k\; p_k \prod_{j\lt k}(1-p_j) \;+\; 2.2\prod_{k=1}^{10}(1-p_k) \]</div>
+<div class="plain"><b class="k">쉬운 말</b>위험 5% 미만인 속도 중 가장 빠른 것으로 갑니다. 모두 위험하면 "부딪히기까지 가장 오래 버티는" 속도를 고릅니다(\(\bar t\) = 충돌까지 기대 시간, 끝까지 안 부딪히면 2.2초로 셈).</div>
+<div class="ex">예시 (애니메이션의 순간, 실제 모델 출력): 1.0m/s <b>23%</b> · 0.6m/s <b>2.3%</b> · 0.3·0·후진 0.1% → 5% 미만 중 가장 빠른 <b>0.6m/s</b> 선택</div>
+<p><b>⑥ 다른 제한과 합치기:</b> 실제 속도는 경로 추종이 원하는 속도, Dreamer가 고른 \(v^*\), 규칙 제한 중 <b>가장 낮은 값</b>입니다. 줄일 때는 곡률이 같게 \(\omega\)도 같은 비율로 줄입니다.</p>
+<div class="eq">\[ v_{\text{cmd}} = \min\big(v_{\text{path}},\ v^*,\ v_{\text{rule}}\big),\qquad \omega_{\text{cmd}} = \omega_{\text{path}}\cdot\frac{v_{\text{cmd}}}{v_{\text{path}}} \]</div>
+<ul>
+<li>규칙 제한(혼합 방식): 앞 1.5m 정지 구역은 그대로, 감속은 "확정 안 된 물체가 앞 2.5m(옆 1.2m) 안이면 0.6m/s까지".</li>
+<li>교착 탈출: Dreamer가 4초 넘게 정지만 고르고 1.5m 정지 구역이 비어 있으면 0.3m/s로 지나갑니다.</li>
+<li>판단 지연: 계산에 걸린 시간만큼 늦게 적용합니다. \(n_{\text{apply}} = n + \lceil \text{ms}/1000 \times 30 \rceil\) (30 = 1초당 물리 계산 횟수). 한 번 판단 0.11초(5090), 0.044초(Jetson Orin).</li>
+</ul>
+
+<!-- 9 -->
+<h2 id="s9"><span class="n">9</span>규칙(비교 대상)</h2>
+<p>차체 앞면에서 앞으로 \(u\), 옆으로 \(s\)만큼 떨어진 장애물 점(확정된 지도 장애물은 빼고)을 봅니다. 차체 반폭은 0.33m입니다.</p>
+<div class="eq">\[ v_{\text{rule}} = \begin{cases} 0 & \exists\ \text{point}:\ -0.3 \lt u \lt 1.5,\ |s| \lt 0.33 + 0.8 \\ 0.35 & \exists\ \text{point}:\ -0.3 \lt u \lt 3.0,\ |s| \lt 0.33 + 1.2 \\ \infty & \text{otherwise} \end{cases} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>앞 1.5m(옆으로 차체 바깥 0.8m까지) 안에 무언가 있으면 정지, 3m 안이면 0.35m/s로 감속. 지금 위치만 보고 상대가 다가오는지는 모릅니다. 1.5m 앞 사람이 1.4m/s로 다가오고 AGV가 1m/s면 닿기까지 \(1.5 / (1.4 + 1.0) \approx 0.6\)초.</div>
+
+<!-- 10 -->
+<h2 id="s10"><span class="n">10</span>길찾기 — A*와 경로 따라가기</h2>
+<div class="eq">\[ f(n) = g(n) + h(n),\qquad g(n') = g(n) + d\,\big(1 + \text{extra}(n')\big),\qquad d \in \{1, \sqrt 2\}\ \text{cells} \]
+\[ \text{extra} = 4\cdot\max\!\Big(0,\ \frac{1.5 - \text{dist}}{1.5}\Big),\qquad \text{forbidden if dist} \lt 0.7\ \text{m},\qquad h(n) = \text{straight-line distance to goal} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>0.1m 칸 지도에서 8방향으로 넓혀 가며, "온 거리 \(g\) + 남은 직선거리 \(h\)"가 가장 작은 칸부터 봅니다. 직선거리는 실제 남은 거리보다 길 수 없어서 가장 짧은 길을 놓치지 않습니다. 장애물에서 0.7m 안 칸은 못 가고, 1.5m 안 칸은 비용을 더 매겨 통로 가운데로 다니게 합니다(dist = 가장 가까운 장애물까지 거리).</div>
+<p><b>경로 따라가기(Pure Pursuit):</b> 경로 위 0.8m 앞 점을 AGV 기준 \((x_r, y_r)\)로 보고,</p>
+<div class="eq">\[ \kappa = \frac{2\,y_r}{x_r^2 + y_r^2},\qquad v_{\text{path}} = \min\!\Big(\frac{1.0}{1 + 2|\kappa|},\ \max(0.2,\ d_{\text{goal}})\Big),\qquad \omega_{\text{path}} = \mathrm{clip}\big(v_{\text{path}}\,\kappa,\ -1.2,\ 1.2\big) \]</div>
+<div class="plain"><b class="k">쉬운 말</b>두 바퀴 로봇은 속도·회전이 일정하면 원을 그립니다. 0.8m 앞 점을 지나는 원의 굽은 정도 \(\kappa\)(곡률 = 1/반지름)를 구해 그만큼 돕니다. 많이 굽을수록 느리게, 목적지 가까이서도 느리게 갑니다.</div>
+<p><b>본 장애물을 지도에 넣기(확정 카운터):</b> 0.1m 칸마다 숫자 \(H\)를 둡니다(0.1초마다 관측).</p>
+<div class="eq">\[ H \leftarrow \begin{cases} \min(H + 1,\ 20) & \text{obstacle points in the cell} \\ \max(H - 5,\ 0) & \text{only floor points in the cell} \end{cases}\qquad \text{confirmed if } H \ge 10 \;\Rightarrow\; \text{re-plan A*} \]</div>
+<div class="plain"><b class="k">쉬운 말</b>같은 칸에 장애물이 약 1초(10번) 계속 보여야 확정하고, 그 자리에서 길을 다시 찾습니다. 바닥이 다시 보이면 빠르게 지웁니다. 지나가는 사람은 확정되지 않아 길을 바꾸지 않고, 떨어진 상자처럼 머무는 것만 지도에 들어갑니다.</div>
+
+<!-- 11 -->
+<h2 id="s11"><span class="n">11</span>평가 숫자의 식</h2>
+<ul>
+<li><b>충돌 없이 도착:</b> 150초 안에 목적지 칸(0.3m 안)에 도착하고, 그동안 한 번도 닿지 않음.</li>
+<li><b>제시간 도착:</b> \(T_{\text{arrive}} \le L_{\text{path}} / 0.7 + 10\) 초 (\(L_{\text{path}}\) = 처음 계획한 경로 길이).</li>
+</ul>
+<p><b>짝 비교(McNemar 정확 검정):</b> 같은 장면에서 결과가 갈린 경우만 셉니다. \(b\) = 규칙만 성공, \(c\) = Dreamer만 성공.</p>
+<div class="eq">\[ p = \min\!\Big(1,\ 2\sum_{i=0}^{\min(b,c)} \binom{b+c}{i}\, 2^{-(b+c)}\Big) \]</div>
+<div class="ex">충돌 없이 도착: \(b = 13,\ c = 26\) → \(p = 0.053\) (경계선) · 제시간: \(b = 17,\ c = 47\) → \(p = 0.0002\)</div>
+<div class="plain"><b class="k">쉬운 말</b>둘이 실력이 같다면 갈린 39번은 동전 던지기처럼 반반이어야 합니다. 13 대 26처럼 치우칠 확률이 \(p\)입니다. 5%보다 작으면 "우연이라 보기 어렵다"고 말합니다.</div>
+<p><b>AUROC (충돌 예측 시험):</b></p>
+<div class="eq">\[ \text{AUROC} = P\big(\,\text{score}(\text{positive}) \gt \text{score}(\text{negative})\,\big) \]</div>
+<div class="plain"><b class="k">쉬운 말</b>"2초 안에 실제로 부딪힌 순간"(양성) 하나와 "부딪히지 않은 순간"(음성) 하나를 무작위로 골랐을 때, 위험 점수가 양성 쪽이 더 높을 확률입니다. 1이면 완벽, 0.5면 찍기. Dreamer의 점수는 ③의 \(P\)(실제 행동으로 상상), 비교용 점수는 앞 통로(앞 0~4m, 좌우 0.8m)에서 가장 가까운 초록 칸까지 거리(가까울수록 위험)입니다.</div>
+<p><b>누가 먼저 도착했나(부호 검정):</b> 둘 다 도착한 480번 중 334번 Dreamer가 먼저 → \(p = 2\,P(X \ge 334 \mid n = 480,\ 0.5) \lt 10^{-18}\).</p>
+
+<!-- 12 -->
+<h2 id="s12"><span class="n">12</span>알아 둘 한계</h2>
+<ul>
+<li><span class="note">후진 데이터가 적음:</span> 최종 학습 데이터 53만 5천 칸 중 후진(\(v \lt 0\))은 2,974칸(0.6%), 대부분 좁은 곳에서 빠져나올 때의 −0.25~−0.3m/s 후진입니다. 후보 "후진 0.3"의 위험은 다른 속도보다 덜 정확할 수 있습니다.</li>
+<li><span class="note">칠하기 문턱 없음:</span> 시뮬레이터 깊이는 잡음이 없어서 괜찮지만, 실제 카메라에서는 잡음 점·빈 값(0) 처리가 필요합니다.</li>
+<li><span class="note">카메라 차이:</span> 시뮬레이터 감지 카메라는 가로 120°, 실제 D435·D455는 약 87°.</li>
+<li>애니메이션의 상상 숫자는 "곧게 일정 속도" 후보로 계산했고, 실제 주행은 "경로를 따라가는" 후보입니다.</li>
+</ul>
+</div>

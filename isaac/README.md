@@ -1,4 +1,4 @@
-# Isaac Sim 쪽 — 5090 VM에서 돌리는 것
+# Isaac Sim 실행 환경 (RTX 5090 VM)
 
 `gen_episodes.py`가 AGV 접근 에피소드를 만들어 `docs/02-데이터규격.md` 형식으로 내놓는다.
 
@@ -11,7 +11,7 @@
 | Isaac Sim | **6.1** pip 설치, venv `~/isaacsim-venv` |
 | 작업 폴더 | `~/agv/isaac/` (이 폴더의 사본) |
 
-## 에피소드 만들기
+## 에피소드 생성
 
 ```bash
 ssh <user>@<VM_IP>
@@ -38,7 +38,7 @@ scp -r <user>@<VM_IP>:~/agv/isaac/out/ep_* /data/ch/agv-wm/data/incoming/
 - **빈 장면 판**: 에피소드마다 같은 자리에서 장애물만 치우고 한 번 더 달린다 → `cond_empty.png`, `future_empty.mp4`
 - **충돌 판정**: 차체 직사각형과 장애물 직사각형 사이 거리가 0. 닿으면 비상 정지
 
-## 첫 실행에서 부딪힌 것들
+## 초기 실행 시 문제 및 해결
 
 | 증상 | 원인 | 해결 |
 |---|---|---|
@@ -48,7 +48,7 @@ scp -r <user>@<VM_IP>:~/agv/isaac/out/ep_* /data/ch/agv-wm/data/incoming/
 | **충돌 순간 화면이 검다** | ① 카메라가 차체 앞에 있어 장애물 안으로 들어감 ② 계속 밀어서 파고듦 ③ 근접 클리핑 | ① 카메라를 차체 안쪽으로 ② 닿으면 정지 ③ 클리핑 5mm |
 | 단색 상자라 채점기가 흐름을 못 잡음 | 광학흐름은 무늬를 따라간다 | 실제 창고 소품으로 교체 |
 
-## 화면으로 보기 (맥북 스트리밍)
+## 원격 화면 스트리밍
 
 ```bash
 ~/agv/stream.sh     # VM에서. "app ready"가 뜨면 접속
